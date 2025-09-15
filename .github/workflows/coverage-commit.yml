@@ -1,0 +1,71 @@
+name: Coverage Commit Badges (C#)
+
+on:
+  push:
+    branches: [ main ]  # sesuaikan bila default branch bukan 'main'
+
+permissions:
+  contents: write
+
+jobs:
+  build-test-coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore src
+
+      - name: Build (Release)
+        run: dotnet build src --no-restore -c Release
+
+      - name: Test with coverage (NUnit + Coverlet)
+        run: |
+          dotnet test src --no-build -c Release \
+            --logger "trx;LogFileName=TestResults.trx" \
+            /p:CollectCoverage=true \
+            /p:CoverletOutput=TestResults/Coverage/ \
+            /p:CoverletOutputFormat="cobertura,opencover,json" \
+            /p:Include="[YourMainNamespace*]*" \
+            /p:Exclude="[*.Tests*]*" \
+            /p:Threshold=80 \
+            /p:ThresholdType="line,branch" \
+            /p:ThresholdStat=total
+
+      - name: Generate coverage report (ReportGenerator)
+        uses: danielpalme/ReportGenerator-GitHub-Action@v5
+        with:
+          reports: '**/TestResults/Coverage/coverage.cobertura.xml'
+          targetdir: 'coverage-report'
+          reporttypes: 'Badges;MarkdownSummary'
+          tag: '${{ github.run_number }}'
+
+      - name: Publish coverage summary to job summary
+        if: always()
+        run: |
+          echo "## Code Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          cat coverage-report/Summary.md >> $GITHUB_STEP_SUMMARY || true
+
+      - name: Copy badges into repo
+        run: |
+          mkdir -p docs/coverage-badges
+          cp -f coverage-report/badges/*.svg docs/coverage-badges/
+
+      - name: Commit badges
+        run: |
+          if [ -n "$(git status --porcelain docs/coverage-badges)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add docs/coverage-badges
+            git commit -m "chore: update coverage badges [skip ci]" || true
+            git push
+          fi

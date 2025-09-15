@@ -1,5 +1,8 @@
 # st-csharp-template
 
+![Line Coverage](./docs/coverage-badges/badge_linecoverage.svg)
+![Branch Coverage](./docs/coverage-badges/badge_branchcoverage.svg)
+
 ## Sub Capaian Pembelajaran
 
 1. Mahasiswa mampu mendeklarasikan kelas yang berisi atribut dan metode sesuai spesifikasi.
