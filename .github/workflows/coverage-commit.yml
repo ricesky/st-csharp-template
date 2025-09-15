@@ -22,31 +22,42 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      # ── Restore & Build pakai solution di src/SampleApp/SampleApp.sln
       - name: Restore
         run: dotnet restore src/SampleApp/SampleApp.sln
 
       - name: Build (Release)
         run: dotnet build src/SampleApp/SampleApp.sln --no-restore -c Release
 
-      # ── Jalankan test di project test dengan Coverlet
+      # Pastikan project test punya coverlet.msbuild
+      - name: Assert coverlet is referenced
+        run: |
+          grep -q 'coverlet.msbuild' src/SampleApp/SampleApp.Tests/SampleApp.Tests.csproj || \
+          (echo "::error::Package coverlet.msbuild belum ditambahkan ke project test" && exit 1)
+
       - name: Test with coverage (NUnit + Coverlet)
         run: |
           dotnet test src/SampleApp/SampleApp.Tests/SampleApp.Tests.csproj --no-build -c Release \
             --logger "trx;LogFileName=TestResults.trx" \
             /p:CollectCoverage=true \
-            /p:CoverletOutput=TestResults/Coverage/ \
-            /p:CoverletOutputFormat=cobertura \
+            /p:CoverletOutput=TestResults/Coverage/coverage \
+            /p:CoverletOutputFormat=\"cobertura,opencover,json\"
             /p:Include="[SampleApp*]*" \
             /p:Exclude="[*.Tests*]*" \
             /p:Threshold=80 \
             /p:ThresholdType=\"line,branch\" \
             /p:ThresholdStat=total
 
+      # Debug: tampilkan file yang dihasilkan (berguna saat path salah)
+      - name: List coverage files (debug)
+        if: always()
+        run: |
+          echo "== Find coverage files =="
+          find src -type f -name "coverage.cobertura.xml" -o -name "TestResults.trx" | sed 's|^| - |'
+
       - name: Generate coverage report (ReportGenerator)
         uses: danielpalme/ReportGenerator-GitHub-Action@v5
         with:
-          reports: 'src/SampleApp/SampleApp.Tests/TestResults/Coverage/coverage.cobertura.xml'
+          reports: '**/coverage.cobertura.xml'
           targetdir: 'coverage-report'
           reporttypes: 'Badges;MarkdownSummary'
           tag: '${{ github.run_number }}'
@@ -71,3 +82,14 @@ jobs:
             git commit -m "chore: update coverage badges [skip ci]" || true
             git push
           fi
+
+      # (Opsional) simpan artefak untuk inspeksi
+      - name: Upload TRX & Coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-and-coverage
+          path: |
+            src/SampleApp/SampleApp.Tests/TestResults.trx
+            **/coverage.cobertura.xml
+            coverage-report
