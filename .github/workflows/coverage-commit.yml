@@ -40,7 +40,7 @@ jobs:
             /p:Include="[SampleApp*]*" \
             /p:Exclude="[*.Tests*]*" \
             /p:Threshold=80 \
-            /p:ThresholdType="line,branch" \
+            /p:ThresholdType=\"line,branch\" \
             /p:ThresholdStat=total
 
       - name: Generate coverage report (ReportGenerator)
