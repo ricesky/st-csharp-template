@@ -36,7 +36,7 @@ jobs:
             --logger "trx;LogFileName=TestResults.trx" \
             /p:CollectCoverage=true \
             /p:CoverletOutput=TestResults/Coverage/ \
-            /p:CoverletOutputFormat="cobertura,opencover,json" \
+            /p:CoverletOutputFormat=cobertura \
             /p:Include="[SampleApp*]*" \
             /p:Exclude="[*.Tests*]*" \
             /p:Threshold=80 \

@@ -11,7 +11,7 @@ public class CalculatorTests
     {
         var calc = new Calculator();
         var result = calc.Add(3, 4);
-        Assert.AreEqual(7, result);
+        Assert.That(result, Is.EqualTo(7));
     }
 
     [Test]
@@ -19,7 +19,7 @@ public class CalculatorTests
     {
         var calc = new Calculator();
         var result = calc.Subtract(5, 4);
-        Assert.AreEqual(1, result);
+        Assert.That(result, Is.EqualTo(1));
     }
 
     [Test]
@@ -27,7 +27,7 @@ public class CalculatorTests
     {
         var calc = new Calculator();
         var result = calc.Multiply(3, 4);
-        Assert.AreEqual(12, result);
+        Assert.That(result, Is.EqualTo(12));
     }
 
     [Test]
@@ -35,7 +35,7 @@ public class CalculatorTests
     {
         var calc = new Calculator();
         var result = calc.Divide(10, 5);
-        Assert.AreEqual(2, result);
+        Assert.That(result, Is.EqualTo(2));
     }
 
     [Test]
@@ -52,6 +52,7 @@ public class CalculatorTests
     public void CategoryOf_CoversBranches(int input, string expected)
     {
         var calc = new Calculator();
-        Assert.AreEqual(expected, calc.CategoryOf(input));
+        var result = calc.CategoryOf(input);
+        Assert.That(result, Is.EqualTo(expected));
     }
 }
