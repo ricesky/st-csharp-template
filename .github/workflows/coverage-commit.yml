@@ -2,7 +2,7 @@ name: Coverage Commit Badges (C#)
 
 on:
   push:
-    branches: [ main ]  # sesuaikan bila default branch bukan 'main'
+    branches: [ main ]
 
 permissions:
   contents: write
@@ -30,16 +30,7 @@ jobs:
 
       - name: Test with coverage (NUnit + Coverlet)
         run: |
-          dotnet test src --no-build -c Release \
-            --logger "trx;LogFileName=TestResults.trx" \
-            /p:CollectCoverage=true \
-            /p:CoverletOutput=TestResults/Coverage/ \
-            /p:CoverletOutputFormat="cobertura,opencover,json" \
-            /p:Include="[YourMainNamespace*]*" \
-            /p:Exclude="[*.Tests*]*" \
-            /p:Threshold=80 \
-            /p:ThresholdType="line,branch" \
-            /p:ThresholdStat=total
+          dotnet test src --no-build -c Release             --logger "trx;LogFileName=TestResults.trx"             /p:CollectCoverage=true             /p:CoverletOutput=TestResults/Coverage/             /p:CoverletOutputFormat="cobertura,opencover,json"             /p:Include="[SampleApp*]*"             /p:Exclude="[*.Tests*]*"             /p:Threshold=80             /p:ThresholdType="line,branch"             /p:ThresholdStat=total
 
       - name: Generate coverage report (ReportGenerator)
         uses: danielpalme/ReportGenerator-GitHub-Action@v5
