@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using SampleApp;
+using System.Runtime.InteropServices;
 
 namespace SampleApp.Tests;
 
@@ -9,28 +10,32 @@ public class CalculatorTests
     public void Add_Works()
     {
         var calc = new Calculator();
-        Assert.AreEqual(7, calc.Add(3, 4));
+        var result = calc.Add(3, 4);
+        Assert.AreEqual(7, result);
     }
 
     [Test]
     public void Subtract_Works()
     {
         var calc = new Calculator();
-        Assert.AreEqual(1, calc.Subtract(5, 4));
+        var result = calc.Subtract(5, 4);
+        Assert.AreEqual(1, result);
     }
 
     [Test]
     public void Multiply_Works()
     {
         var calc = new Calculator();
-        Assert.AreEqual(12, calc.Multiply(3, 4));
+        var result = calc.Multiply(3, 4);
+        Assert.AreEqual(12, result);
     }
 
     [Test]
     public void Divide_Works()
     {
         var calc = new Calculator();
-        Assert.AreEqual(2, calc.Divide(10, 5));
+        var result = calc.Divide(10, 5);
+        Assert.AreEqual(2, result);
     }
 
     [Test]
