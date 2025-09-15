@@ -2,7 +2,7 @@ name: Coverage Commit Badges (C#)
 
 on:
   push:
-    branches: [ main ]   
+    branches: [ main ]
 
 permissions:
   contents: write
@@ -22,17 +22,17 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      # ── Restore & Build pakai solution yang ada di src/SampleApp/SampleApp.sln
+      # ── Restore & Build pakai solution di src/SampleApp/SampleApp.sln
       - name: Restore
         run: dotnet restore src/SampleApp/SampleApp.sln
 
       - name: Build (Release)
         run: dotnet build src/SampleApp/SampleApp.sln --no-restore -c Release
 
-      # ── Jalankan test hanya pada project test
+      # ── Jalankan test di project test dengan Coverlet
       - name: Test with coverage (NUnit + Coverlet)
         run: |
-          dotnet test src/SampleApp.Tests/SampleApp.Tests.csproj --no-build -c Release \
+          dotnet test src/SampleApp/SampleApp.Tests/SampleApp.Tests.csproj --no-build -c Release \
             --logger "trx;LogFileName=TestResults.trx" \
             /p:CollectCoverage=true \
             /p:CoverletOutput=TestResults/Coverage/ \
@@ -46,7 +46,7 @@ jobs:
       - name: Generate coverage report (ReportGenerator)
         uses: danielpalme/ReportGenerator-GitHub-Action@v5
         with:
-          reports: 'src/SampleApp.Tests/TestResults/Coverage/coverage.cobertura.xml'
+          reports: 'src/SampleApp/SampleApp.Tests/TestResults/Coverage/coverage.cobertura.xml'
           targetdir: 'coverage-report'
           reporttypes: 'Badges;MarkdownSummary'
           tag: '${{ github.run_number }}'
